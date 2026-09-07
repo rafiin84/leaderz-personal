@@ -1,0 +1,282 @@
+import type { Post } from '@/types/content'
+
+/**
+ * Real posts from Sridhar Vembu's X account (@svembu, https://x.com/svembu).
+ *
+ * The `text`, `createdAt` and `sourceUrl` of every entry below are genuine —
+ * text is quoted verbatim from the public post, and the date is decoded from
+ * the tweet's snowflake id. Engagement figures (reactions, comments, shares,
+ * views) are NOT real: X does not expose them without an API key, so they are
+ * illustrative placeholders like the rest of the mock data in this folder.
+ *
+ * Entries ending in an ellipsis are excerpts of longer threads, not the full
+ * post. The `sourceUrl` field keeps the permalink to the complete original as
+ * provenance; it is no longer surfaced in the UI.
+ *
+ * This is a hand-verified sample, NOT his full timeline. To load the real
+ * archive see scripts/import-x-posts.mjs.
+ */
+
+/**
+ * Thematic images for the feed.
+ *
+ * Stock photographs from the project's existing image set. Each was opened and
+ * identified before being assigned — the captions already in this repo were
+ * unreliable (one "team at work" is a robot, one "rocket test rig" is Mars), so
+ * subjects here are described from the actual image.
+ *
+ * These are NOT the media attached to the original tweets, which is not
+ * retrievable without API access. Captions describe the photograph only.
+ */
+const IMG = {
+  /** Humanoid robot on display. */
+  robot: 'https://images.unsplash.com/photo-1535378917042-10a22c95931a',
+  /** Young technician at a machine in a workshop. */
+  workshop: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758',
+  /** Circuit board close-up, chips and components. */
+  circuit: 'https://images.unsplash.com/photo-1518770660439-4636190af475',
+  /** Wallet holding payment cards. */
+  payments: 'https://images.unsplash.com/photo-1560472355-536de3962603',
+  /** Farmland at sunrise. */
+  farmland: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef',
+  /** Young crop seedlings in soil. */
+  seedlings: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449',
+  /** Farmers ploughing a flooded paddy field with a tractor and oxen. */
+  ploughing: 'https://images.unsplash.com/photo-1574943320219-553eb213f72d',
+} as const
+
+let mediaSeq = 0
+const img = (url: string, caption: string) => ({
+  id: `pm-x-${mediaSeq++}`,
+  type: 'image' as const,
+  url: `${url}?w=1200&h=800&fit=crop`,
+  caption,
+})
+
+const AVATAR = '/sridhar.avif'
+
+function engagement(like: number, heart: number, insightful: number, support: number) {
+  return [
+    { type: 'like' as const, count: like, userReacted: false },
+    { type: 'heart' as const, count: heart, userReacted: false },
+    { type: 'insightful' as const, count: insightful, userReacted: false },
+    { type: 'support' as const, count: support, userReacted: false },
+  ]
+}
+
+const base = {
+  tenantId: 'tenant-sridhar',
+  authorId: 'leader-sridhar',
+  authorName: 'Sridhar Vembu',
+  authorTitle: 'Founder & Chief Scientist, Zoho Corporation',
+  authorAvatar: AVATAR,
+  type: 'text' as const,
+  media: [],
+  comments: [],
+  isPinned: false,
+  isFollowerPost: false,
+}
+
+export const SVEMBU_POSTS: Post[] = [
+  {
+    ...base,
+    id: 'x-1975871598617125138',
+    type: 'image',
+    media: [img(IMG.workshop, 'Technician at work in a workshop')],
+    sourceUrl: 'https://x.com/svembu/status/1975871598617125138',
+    text: 'Thank you Sir, for your faith in us🙏 I dedicate this moment to our hard working engineers who have toiled hard in Zoho for over 20 years. They all stayed in India and worked all these years because they believed. Their faith is vindicated. Jai Hind, Jai Bharat🙏',
+    isPinned: true,
+    location: 'Tenkasi, Tamil Nadu',
+    stateName: 'Tamil Nadu',
+    reactions: engagement(41200, 15800, 6400, 9100),
+    commentCount: 1840,
+    shareCount: 7300,
+    viewCount: 2140000,
+    createdAt: '2025-10-08T00:00:00Z',
+    updatedAt: '2025-10-08T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1974387092441739320',
+    type: 'image',
+    media: [img(IMG.workshop, 'Engineer working at a machine')],
+    sourceUrl: 'https://x.com/svembu/status/1974387092441739320',
+    text: 'I was in a meeting in our Tenkasi office with our Arattai engineers, working out refinements to the app and a team member showed this tweet. Thank you @anandmahindra this gives us even more determination 🙏',
+    location: 'Tenkasi, Tamil Nadu',
+    stateName: 'Tamil Nadu',
+    topicName: 'Rural Engineering',
+    reactions: engagement(28400, 9600, 3800, 5200),
+    commentCount: 962,
+    shareCount: 4100,
+    viewCount: 1380000,
+    createdAt: '2025-10-04T00:00:00Z',
+    updatedAt: '2025-10-04T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1894508835534164006',
+    type: 'image',
+    media: [img(IMG.workshop, 'Technician at a machine'), img(IMG.ploughing, 'Ploughing a paddy field')],
+    sourceUrl: 'https://x.com/svembu/status/1894508835534164006',
+    text: 'As Zoho grows rapidly in India, we have rural engineers in Tamil Nadu working closely with customers in Mumbai and Delhi - so much of our business is driven form these cities and from Gujarat. Rural jobs in Tamil Nadu depend on us serving those customers well.',
+    location: 'Tamil Nadu',
+    stateName: 'Tamil Nadu',
+    topicName: 'Rural Jobs',
+    reactions: engagement(12600, 3900, 2700, 2100),
+    commentCount: 540,
+    shareCount: 1900,
+    viewCount: 684000,
+    createdAt: '2025-02-25T00:00:00Z',
+    updatedAt: '2025-02-25T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1887283456620613838',
+    type: 'image',
+    media: [img(IMG.farmland, 'Farmland at sunrise'), img(IMG.seedlings, 'Young crop seedlings')],
+    sourceUrl: 'https://x.com/svembu/status/1887283456620613838',
+    text: 'R&D and RD (rural development) the Zoho way! Nice video below 👇',
+    topicName: 'Rural Development',
+    reactions: engagement(9800, 3100, 1900, 1600),
+    commentCount: 312,
+    shareCount: 1450,
+    viewCount: 421000,
+    createdAt: '2025-02-05T00:00:00Z',
+    updatedAt: '2025-02-05T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1883816347475517506',
+    type: 'image',
+    media: [img(IMG.farmland, 'Farmland at sunrise')],
+    sourceUrl: 'https://x.com/svembu/status/1883816347475517506',
+    text: 'A new chapter begins today. In view of the various challenges and opportunities facing us, including recent major developments in AI, it has been decided that it is best that I should focus full time on R&D initiatives, along with pursuing my personal rural development mission.',
+    topicName: 'Rural Development',
+    reactions: engagement(52400, 18900, 8700, 11200),
+    commentCount: 2380,
+    shareCount: 9600,
+    viewCount: 3120000,
+    createdAt: '2025-01-27T00:00:00Z',
+    updatedAt: '2025-01-27T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1267685600779362304',
+    type: 'image',
+    media: [img(IMG.ploughing, 'Farmers ploughing a paddy field')],
+    sourceUrl: 'https://x.com/svembu/status/1267685600779362304',
+    text: '5/ Jobs go where job creators go. When Zoho started our office in Tenkasi, there was an apprehension "Can we find talent? Would people want to work in a small town/village setting?" 8 years and 500 people later, no one worries about that anymore. We have a lot of applicants.',
+    location: 'Tenkasi, Tamil Nadu',
+    stateName: 'Tamil Nadu',
+    topicName: 'Rural Jobs',
+    reactions: engagement(16700, 5400, 4100, 2900),
+    commentCount: 703,
+    shareCount: 3800,
+    viewCount: 912000,
+    createdAt: '2020-06-02T00:00:00Z',
+    updatedAt: '2020-06-02T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1218277230951849984',
+    type: 'image',
+    media: [img(IMG.farmland, 'Open farmland at golden hour')],
+    sourceUrl: 'https://x.com/svembu/status/1218277230951849984',
+    text: 'I will offer an example. We have an office in Pleasanton CA and a rural office near Tenkasi. I spend most of my time in Tenkasi now. Entirely different economic worlds and local GDP yet Tenkasi area quite livable in terms of amenities, with far lower ecological footprint.',
+    location: 'Tenkasi, Tamil Nadu',
+    stateName: 'Tamil Nadu',
+    topicName: 'Rural Development',
+    reactions: engagement(8400, 2600, 2200, 1400),
+    commentCount: 289,
+    shareCount: 1120,
+    viewCount: 357000,
+    createdAt: '2020-01-17T00:00:00Z',
+    updatedAt: '2020-01-17T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1990629835086180435',
+    type: 'image',
+    media: [img(IMG.circuit, 'Circuit board close-up')],
+    sourceUrl: 'https://x.com/svembu/status/1990629835086180435',
+    text: 'Please update the Arattai app from the Play Store/App Store and please encourage your contacts to do so. The end to end encryption will be enabled Tuesday night IST…',
+    topicName: 'Rural Engineering',
+    reactions: engagement(18900, 5200, 2400, 3100),
+    commentCount: 812,
+    shareCount: 3400,
+    viewCount: 1120000,
+    createdAt: '2025-11-18T00:00:00Z',
+    updatedAt: '2025-11-18T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1975425916403916859',
+    type: 'image',
+    media: [img(IMG.payments, 'Wallet holding payment cards')],
+    sourceUrl: 'https://x.com/svembu/status/1975425916403916859',
+    text: 'Even as our Arattai team is scaling up and fine tuning the product, our other product teams are hard at work. Last year Zoho became an RBI authorized payment aggregator in India and launched our online payment solutions…',
+    reactions: engagement(14200, 4100, 2600, 2200),
+    commentCount: 486,
+    shareCount: 2100,
+    viewCount: 743000,
+    createdAt: '2025-10-07T00:00:00Z',
+    updatedAt: '2025-10-07T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1974620561222652163',
+    type: 'image',
+    media: [img(IMG.circuit, 'Circuit board and components')],
+    sourceUrl: 'https://x.com/svembu/status/1974620561222652163',
+    text: 'Arattai is on the surface a simple product but it has a lot of depth inside. Let me list the engineering frameworks (all homegrown) that power Arattai…',
+    reactions: engagement(21600, 6800, 4900, 2800),
+    commentCount: 934,
+    shareCount: 5200,
+    viewCount: 1460000,
+    createdAt: '2025-10-04T00:00:00Z',
+    updatedAt: '2025-10-04T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1972885856613437501',
+    type: 'image',
+    media: [img(IMG.circuit, 'Server-class components on a board')],
+    sourceUrl: 'https://x.com/svembu/status/1972885856613437501',
+    text: 'There are questions about where Zoho is developed and where the data is hosted and who hosts it. There is a lot of false information we want to correct. 1. All the products are developed in India…',
+    reactions: engagement(26400, 7900, 5600, 4100),
+    commentCount: 1180,
+    shareCount: 6900,
+    viewCount: 1870000,
+    createdAt: '2025-09-30T00:00:00Z',
+    updatedAt: '2025-09-30T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1972429032282312776',
+    type: 'image',
+    media: [img(IMG.robot, 'Humanoid robot on display')],
+    sourceUrl: 'https://x.com/svembu/status/1972429032282312776',
+    text: 'We understand the push for Zoho to go public. But let me state the reality: Arattai would very likely not have been built by a public company that faces quarter to quarter financial pressure…',
+    reactions: engagement(31800, 9400, 7100, 5300),
+    commentCount: 1420,
+    shareCount: 8100,
+    viewCount: 2260000,
+    createdAt: '2025-09-28T00:00:00Z',
+    updatedAt: '2025-09-28T00:00:00Z',
+  },
+  {
+    ...base,
+    id: 'x-1902904032676720903',
+    type: 'image',
+    media: [img(IMG.robot, 'Humanoid robot on display'), img(IMG.circuit, 'Chips on a circuit board')],
+    sourceUrl: 'https://x.com/svembu/status/1902904032676720903',
+    text: '…we cannot forget the foundations. That is the Ulaa browser, Arattai messaging software. Then getting deeper still, compilers, databases, operating systems, PCs, servers, network equipment…',
+    topicName: 'Rural Engineering',
+    reactions: engagement(11400, 3600, 3900, 1800),
+    commentCount: 402,
+    shareCount: 2300,
+    viewCount: 596000,
+    createdAt: '2025-03-21T00:00:00Z',
+    updatedAt: '2025-03-21T00:00:00Z',
+  },
+]
