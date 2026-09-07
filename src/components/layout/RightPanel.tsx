@@ -3,12 +3,11 @@ import { useState } from 'react'
 import { useAppStore } from '@/stores/appStore'
 import {
   useFollowers, useAISuggestions, useEvents, useUpcomingBirthdays,
-  useMission, useProjects, useFollowUps,
+  useProjects, useFollowUps,
 } from '@/queries'
 import Link from 'next/link'
-import { Phone, Lightning, CalendarBlank, Cake, Target, Sparkle, X } from '@phosphor-icons/react'
-import { formatNumber, formatShortDate } from '@/lib/formatting'
-import { ImageWithFallback } from '@/components/common/ImageWithFallback'
+import { Phone, Lightning, CalendarBlank, Cake, Sparkle, X } from '@phosphor-icons/react'
+import { formatShortDate } from '@/lib/formatting'
 import { MiniCalendar } from '@/components/common/MiniCalendar'
 import type { Contact } from '@/types/contact'
 
@@ -44,7 +43,6 @@ export function RightPanel() {
   const { data: events } = useEvents(activeTenantId)
   const { data: birthdays } = useUpcomingBirthdays(activeTenantId, userRole)
   const { data: followUps } = useFollowUps(activeTenantId, userRole)
-  const { data: mission } = useMission(activeTenantId)
   const { data: projects } = useProjects(activeTenantId)
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
@@ -155,38 +153,6 @@ export function RightPanel() {
           )}
         </div>
       </section>
-
-      {/* Mission */}
-      {mission && (
-        <section className="mb-6">
-          <SectionHeading href="/leader/mission">Your mission</SectionHeading>
-          <Link href="/leader/mission" className="block rounded-xl border border-border bg-card overflow-hidden hover:bg-muted/30 transition-colors">
-            <div className="relative h-16 overflow-hidden">
-              {mission.coverImageUrl && (
-                <ImageWithFallback src={mission.coverImageUrl} fallbackSrc="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&h=600&fit=crop" alt="" className="w-full h-full object-cover" />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/10" />
-              <div className="absolute inset-0 px-3 flex items-center gap-2">
-                <Target size={15} weight="fill" className="text-white shrink-0" />
-                <p className="text-sm font-bold text-white leading-tight">{mission.title}</p>
-              </div>
-            </div>
-            <dl className="grid grid-cols-2 gap-y-2 p-3">
-              {[
-                { label: 'Followers', value: formatNumber(mission.impact.peopleReached) },
-                { label: 'Districts', value: mission.impact.districtsActive },
-                { label: 'Activities', value: mission.impact.activitiesCount },
-                { label: 'Companies', value: mission.impact.projectsDiscovered },
-              ].map(stat => (
-                <div key={stat.label}>
-                  <dt className="text-[11px] text-muted-foreground">{stat.label}</dt>
-                  <dd className="text-sm font-bold text-foreground">{stat.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </Link>
-        </section>
-      )}
 
       {/* Relationship insights */}
       {relationship.length > 0 && (
