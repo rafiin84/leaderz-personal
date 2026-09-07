@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { useAppStore } from '@/stores/appStore'
 import {
   useFollowers, useAISuggestions, useEvents, useUpcomingBirthdays,
-  useProjects, useFollowUps,
+  useFollowUps,
 } from '@/queries'
 import Link from 'next/link'
 import { Phone, Lightning, CalendarBlank, Cake, Sparkle, X } from '@phosphor-icons/react'
@@ -43,7 +43,6 @@ export function RightPanel() {
   const { data: events } = useEvents(activeTenantId)
   const { data: birthdays } = useUpcomingBirthdays(activeTenantId, userRole)
   const { data: followUps } = useFollowUps(activeTenantId, userRole)
-  const { data: projects } = useProjects(activeTenantId)
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
 
@@ -171,32 +170,6 @@ export function RightPanel() {
                     <p className="text-sm font-semibold text-foreground leading-tight">{s.title}</p>
                     <p className="text-xs text-muted-foreground mt-0.5 line-clamp-3">{s.body}</p>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* Discovered companies */}
-      {projects && projects.length > 0 && (
-        <section className="mb-6">
-          <SectionHeading href="/leader/projects">Discovered</SectionHeading>
-          <div className="space-y-1">
-            {projects.slice(0, 3).map(project => (
-              <Link
-                key={project.id}
-                href={`/leader/projects/${project.id}`}
-                className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-muted/40 transition-colors"
-              >
-                <img
-                  src={project.heroImageUrl}
-                  alt=""
-                  className="w-10 h-10 rounded-lg object-cover shrink-0"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">{project.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">{project.location}</p>
                 </div>
               </Link>
             ))}
