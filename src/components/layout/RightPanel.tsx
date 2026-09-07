@@ -2,10 +2,10 @@
 import { useState } from 'react'
 import { useAppStore } from '@/stores/appStore'
 import {
-  useUpcomingBirthdays, useFollowUps,
+  useFollowers, useUpcomingBirthdays, useFollowUps,
 } from '@/queries'
 import Link from 'next/link'
-import { Lightning, Cake, X } from '@phosphor-icons/react'
+import { Phone, Lightning, Cake, X } from '@phosphor-icons/react'
 import { formatShortDate } from '@/lib/formatting'
 import { MiniCalendar } from '@/components/common/MiniCalendar'
 import type { Contact } from '@/types/contact'
@@ -18,12 +18,34 @@ function isSameMonthDay(a: Date, b: Date) {
   return a.getMonth() === b.getMonth() && a.getDate() === b.getDate()
 }
 
+const MOCK_PHONES: Record<string, string> = {
+  'f-01': '+917010012345',
+  'f-05': '+917010098765',
+  'f-07': '+917010054321',
+  'f-08': '+917010011111',
+  'f-04': '+917010022222',
+}
+
+function SectionHeading({ children, href }: { children: React.ReactNode; href?: string }) {
+  return (
+    <div className="flex items-center justify-between mb-3">
+      <h3 className="text-xs font-semibold text-foreground/40 uppercase tracking-wider">{children}</h3>
+      {href && <Link href={href} className="text-xs text-primary font-medium">See all</Link>}
+    </div>
+  )
+}
+
 export function RightPanel() {
   const { activeTenantId, userRole } = useAppStore()
+  const { data: followers } = useFollowers(activeTenantId)
   const { data: birthdays } = useUpcomingBirthdays(activeTenantId, userRole)
   const { data: followUps } = useFollowUps(activeTenantId, userRole)
 
   const [selectedDate, setSelectedDate] = useState<Date | null>(() => new Date())
+
+  const topFollowers = [...(followers ?? [])]
+    .sort((a, b) => (b.leaderRelationships[0]?.activityCount ?? 0) - (a.leaderRelationships[0]?.activityCount ?? 0))
+    .slice(0, 3)
 
   // With no date picked, show the first couple of each as a quick digest.
   // With a date picked, show exactly what falls on that day — birthdays
@@ -111,6 +133,35 @@ export function RightPanel() {
         </div>
       </section>
 
+      {/* Top engagers */}
+      {topFollowers.length > 0 && (
+        <section>
+          <SectionHeading>Top engagers</SectionHeading>
+          <div className="space-y-1">
+            {topFollowers.map(f => (
+              <div key={f.id} className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-muted/40 transition-colors group">
+                {f.avatarUrl
+                  ? <img src={f.avatarUrl} alt={f.name} className="w-8 h-8 rounded-full object-cover shrink-0" />
+                  : <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-bold shrink-0">{f.name[0]}</div>
+                }
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">{f.name}</p>
+                  <p className="text-xs text-muted-foreground truncate">{f.occupation ?? f.location}</p>
+                </div>
+                {MOCK_PHONES[f.id] && (
+                  <a
+                    href={`tel:${MOCK_PHONES[f.id]}`}
+                    className="shrink-0 p-1.5 rounded-full bg-foreground/[0.06] text-foreground hover:bg-foreground/12 transition-colors"
+                    title="Call"
+                  >
+                    <Phone size={13} weight="fill" />
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
     </aside>
   )
 }
